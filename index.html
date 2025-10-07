@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSSC Clinic Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="nav-brand">
+            <i class="fas fa-clinic-medical"></i>
+            <span>DSSC Clinic Admin</span>
+        </div>
+        <div class="nav-user">
+            <div class="notification-bell" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count" id="notificationCount">0</span>
+            </div>
+            <div class="user-profile" onclick="toggleProfileDropdown()">
+                <img src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=50&h=50&fit=crop" alt="Admin" class="user-avatar">
+                <span class="user-name">Dr. Admin</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Dropdown -->
+    <div class="profile-dropdown" id="profileDropdown">
+        <div class="profile-dropdown-header">
+            <img src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=60&h=60&fit=crop" alt="Admin" class="profile-avatar">
+            <div class="profile-info">
+                <h4>Dr. John Admin</h4>
+                <p>Administrator</p>
+            </div>
+        </div>
+        <div class="profile-dropdown-menu">
+            <a href="#" onclick="showSection('profile')" class="profile-menu-item">
+                <i class="fas fa-user"></i> Manage Profile
+            </a>
+            <a href="#" onclick="showSection('settings')" class="profile-menu-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            <a href="#" onclick="logout()" class="profile-menu-item">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Notification Dropdown -->
+    <div class="notification-dropdown" id="notificationDropdown">
+        <div class="notification-header">
+            <h3>Notifications</h3>
+            <button onclick="clearAllNotifications()" class="clear-btn">Clear All</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+            <!-- Notifications will be populated here -->
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul class="nav-menu">
+            <li><a href="#" onclick="showSection('dashboard')" class="nav-link active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#" onclick="showSection('users')" class="nav-link"><i class="fas fa-users"></i> Users</a></li>
+            <li><a href="#" onclick="showSection('requests')" class="nav-link"><i class="fas fa-calendar-check"></i> Requests</a></li>
+            <li><a href="#" onclick="showSection('inventory')" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a></li>
+            <li><a href="#" onclick="showSection('reports')" class="nav-link"><i class="fas fa-chart-bar"></i> Reports</a></li>
+            <li><a href="#" onclick="showSection('staff')" class="nav-link"><i class="fas fa-user-md"></i> Staff</a></li>
+            <li><a href="#" onclick="showSection('settings')" class="nav-link"><i class="fas fa-cog"></i> Settings</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h1>Dashboard Overview</h1>
+                <p>Welcome to DSSC Clinic Administration Panel</p>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="card-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="totalUsers">0</h3>
+                        <p>Total Users</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon inventory">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="totalItems">0</h3>
+                        <p>Inventory Items</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon requests">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="totalRequests">0</h3>
+                        <p>Total Requests</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="card-icon notifications">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 id="totalNotifications">0</h3>
+                        <p>Notifications</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>Users by Type</h3>
+                    <canvas id="usersChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Inventory Categories</h3>
+                    <canvas id="inventoryChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Request Status</h3>
+                    <canvas id="requestsChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Activity Timeline</h3>
+                    <canvas id="activityChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Section -->
+        <section id="profile" class="content-section">
+            <div class="section-header">
+                <h1>Manage Profile</h1>
+                <p>Update your personal information</p>
+            </div>
+            <div class="profile-container">
+                <div class="profile-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="profileName" value="Dr. John Admin">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="profileEmail" value="admin@dssc.edu.ph">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="profileContact" value="+63 912 345 6789">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="profilePassword" value="********">
+                    </div>
+                    <button class="btn btn-primary" onclick="updateProfile()">Update Profile</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users" class="content-section">
+            <div class="section-header">
+                <h1>User Management</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search users..." id="userSearch" oninput="searchUsers()">
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddUserModal()">
+                        <i class="fas fa-plus"></i> Add User
+                    </button>
+                </div>
+            </div>
+
+            <!-- User Type Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showUserType('all')">All Users</button>
+                <button class="tab-btn" onclick="showUserType('students')">Students</button>
+                <button class="tab-btn" onclick="showUserType('staff')">Staff</button>
+                <button class="tab-btn" onclick="showUserType('faculty')">Faculty</button>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-container">
+                <table class="data-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Requests Section -->
+        <section id="requests" class="content-section">
+            <div class="section-header">
+                <h1>User Requests & Appointments</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search requests..." id="requestSearch" oninput="searchRequests()">
+                    </div>
+                    <select id="requestFilter" onchange="filterRequests()">
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>User</th>
+                            <th>Service</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsTableBody">
+                        <!-- Requests will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Inventory Section -->
+        <section id="inventory" class="content-section">
+            <div class="section-header">
+                <h1>Inventory Management</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search items..." id="inventorySearch" oninput="searchInventory()">
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddItemModal()">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody">
+                        <!-- Inventory items will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="content-section">
+            <div class="section-header">
+                <h1>System Reports</h1>
+                <p>Monitor system health and generate reports</p>
+            </div>
+
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h3>Expiry Reports</h3>
+                    <div class="report-content">
+                        <div class="report-stat">
+                            <span class="stat-number" id="expiringItems">0</span>
+                            <span class="stat-label">Items Expiring Soon</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="generateExpiryReport()">View Details</button>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3>Low Stock Alert</h3>
+                    <div class="report-content">
+                        <div class="report-stat">
+                            <span class="stat-number" id="lowStockItems">0</span>
+                            <span class="stat-label">Low Stock Items</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="generateLowStockReport()">View Details</button>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3>Upcoming Appointments</h3>
+                    <div class="report-content">
+                        <div class="report-stat">
+                            <span class="stat-number" id="upcomingAppointments">0</span>
+                            <span class="stat-label">This Week</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="generateAppointmentReport()">View Details</button>
+                    </div>
+                </div>
+
+                <div class="report-card">
+                    <h3>Activity Audit</h3>
+                    <div class="report-content">
+                        <div class="report-stat">
+                            <span class="stat-number" id="totalActivities">0</span>
+                            <span class="stat-label">Total Activities</span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="generateActivityReport()">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Details Modal will be shown here -->
+            <div id="reportModal" class="modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 id="reportModalTitle">Report Details</h3>
+                        <span class="close" onclick="closeReportModal()">&times;</span>
+                    </div>
+                    <div class="modal-body" id="reportModalBody">
+                        <!-- Report details will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Staff Section -->
+        <section id="staff" class="content-section">
+            <div class="section-header">
+                <h1>Staff Management</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search staff..." id="staffSearch" oninput="searchStaff()">
+                    </div>
+                    <button class="btn btn-primary" onclick="showAddStaffModal()">
+                        <i class="fas fa-plus"></i> Add Staff
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table" id="staffTable">
+                    <thead>
+                        <tr>
+                            <th>Staff ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Last Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staffTableBody">
+                        <!-- Staff will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="content-section">
+            <div class="section-header">
+                <h1>System Settings</h1>
+                <p>Configure system preferences and data management</p>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h3>Data Management</h3>
+                    <div class="settings-content">
+                        <button class="btn btn-secondary" onclick="backupData()">
+                            <i class="fas fa-download"></i> Backup Data
+                        </button>
+                        <button class="btn btn-secondary" onclick="restoreData()">
+                            <i class="fas fa-upload"></i> Restore Data
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>User Roles & Permissions</h3>
+                    <div class="settings-content">
+                        <button class="btn btn-secondary" onclick="manageRoles()">
+                            <i class="fas fa-users-cog"></i> Manage Roles
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>System Preferences</h3>
+                    <div class="settings-content">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="emailNotifications" checked>
+                                Email Notifications
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="autoBackup" checked>
+                                Auto Backup (Daily)
+                            </label>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scanner Section -->
+        <section id="scanner" class="content-section">
+            <div class="section-header">
+                <h1>Barcode Scanner</h1>
+                <p>Scan medicine barcodes to quickly access and manage inventory</p>
+            </div>
+
+            <div class="scanner-container">
+                <div class="scanner-card">
+                    <div class="scanner-area">
+                        <div class="scanner-frame">
+                            <div class="scanner-line"></div>
+                            <i class="fas fa-qrcode scanner-icon"></i>
+                            <p>Position barcode within the frame</p>
+                        </div>
+                        <div class="scanner-controls">
+                            <button class="btn btn-primary" onclick="startScanning()">
+                                <i class="fas fa-camera"></i> Start Scanning
+                            </button>
+                            <button class="btn btn-secondary" onclick="stopScanning()">
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                            <input type="text" id="manualBarcode" placeholder="Or enter barcode manually..." class="manual-input">
+                            <button class="btn btn-secondary" onclick="searchByBarcode()">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="scan-results" id="scanResults" style="display: none;">
+                    <div class="result-card">
+                        <h3>Scanned Medicine Details</h3>
+                        <div class="medicine-info" id="medicineInfo">
+                            <!-- Medicine details will be populated here -->
+                        </div>
+                        <div class="scan-actions">
+                            <button class="btn btn-success" onclick="approveMedicine()">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button class="btn btn-warning" onclick="editMedicine()">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-primary" onclick="saveMedicine()">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-secondary" onclick="clearScan()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <span class="close" onclick="closeModal('addUserModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="newUserName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="newUserEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>User Type</label>
+                        <select id="newUserType" required>
+                            <option value="">Select Type</option>
+                            <option value="students">Student</option>
+                            <option value="staff">Staff</option>
+                            <option value="faculty">Faculty</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="newUserContact">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addUserModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Item</h3>
+                <span class="close" onclick="closeModal('addItemModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addItemForm">
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="newItemName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="newItemCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="medicines">Medicines</option>
+                            <option value="supplies">Medical Supplies</option>
+                            <option value="equipment">Equipment</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="newItemQuantity" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" id="newItemExpiry">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addItemModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Staff Modal -->
+    <div id="addStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Staff</h3>
+                <span class="close" onclick="closeModal('addStaffModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="addStaffForm">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="newStaffName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="newStaffRole" required>
+                            <option value="">Select Role</option>
+                            <option value="nurse">Nurse</option>
+                            <option value="doctor">Doctor</option>
+                            <option value="assistant">Medical Assistant</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" id="newStaffDepartment" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="newStaffEmail" required>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('addStaffModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Staff</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
